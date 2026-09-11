@@ -13,8 +13,8 @@ function App() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Live Render Backend URL
-  const API_URL = 'https://feedback-collector-fl8l.onrender.com/api/feedback';
+  const API_URL =
+    'https://feedback-collector-fl8l.onrender.com/api/feedback';
 
   const fetchFeedbacks = async () => {
     try {
@@ -51,7 +51,7 @@ function App() {
         date: new Date().toISOString().split('T')[0]
       });
 
-      fetchFeedbacks();
+      await fetchFeedbacks();
 
       alert('Feedback Submitted Successfully!');
     } catch (err) {
@@ -62,284 +62,157 @@ function App() {
     }
   };
 
+  const renderStars = (rating) => {
+    const value = Number(rating) || 0;
+
+    return (
+      <span className="stars">
+        {'★'.repeat(value)}
+        {'☆'.repeat(5 - value)}
+      </span>
+    );
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: '550px',
-        margin: '40px auto',
-        padding: '30px',
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-      }}
-    >
-      <h2
-        style={{
-          textAlign: 'center',
-          color: '#2c3e50',
-          marginBottom: '25px'
-        }}
-      >
-        Feedback Collector
-      </h2>
+    <div className="page">
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '15px',
-          marginBottom: '35px'
-        }}
-      >
-        {/* Name Field */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px'
-          }}
-        >
-          <label
-            style={{
-              fontWeight: 'bold',
-              color: '#34495e',
-              fontSize: '14px'
-            }}
-          >
-            Name:
-          </label>
-
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter your name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-brand">
+          ⭐ Feedback Collector
         </div>
 
-        {/* Message Field */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px'
-          }}
-        >
-          <label
-            style={{
-              fontWeight: 'bold',
-              color: '#34495e',
-              fontSize: '14px'
-            }}
-          >
-            Message:
-          </label>
-
-          <textarea
-            name="message"
-            placeholder="Write your feedback here..."
-            value={formData.message}
-            onChange={handleChange}
-            required
-            rows="4"
-            style={{
-              ...inputStyle,
-              resize: 'vertical'
-            }}
-          />
+        <div className="navbar-links">
+          <a href="#feedback-form">Give Feedback</a>
+          <a href="#all-feedback">All Feedbacks</a>
         </div>
+      </nav>
 
-        {/* Rating Field */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px'
-          }}
-        >
-          <label
-            style={{
-              fontWeight: 'bold',
-              color: '#34495e',
-              fontSize: '14px'
-            }}
-          >
-            Rating:
-          </label>
+      {/* Main Container */}
+      <main className="container">
 
-          <select
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            style={inputStyle}
-          >
-            <option value="1">1 - Poor</option>
-            <option value="2">2 - Fair</option>
-            <option value="3">3 - Good</option>
-            <option value="4">4 - Very Good</option>
-            <option value="5">5 - Excellent</option>
-          </select>
-        </div>
-
-        {/* Date Field */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px'
-          }}
-        >
-          <label
-            style={{
-              fontWeight: 'bold',
-              color: '#34495e',
-              fontSize: '14px'
-            }}
-          >
-            Date:
-          </label>
-
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: '12px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            backgroundColor: '#00a8ff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            marginTop: '10px',
-            transition: 'background-color 0.2s'
-          }}
-        >
-          {loading ? 'Submitting...' : 'Submit Feedback'}
-        </button>
-      </form>
-
-      {/* Feedbacks List */}
-      <h3
-        style={{
-          color: '#2c3e50',
-          borderBottom: '2px solid #f1f2f6',
-          paddingBottom: '10px',
-          marginBottom: '20px'
-        }}
-      >
-        All Feedbacks
-      </h3>
-
-      <div>
-        {(feedbacks || []).length === 0 ? (
-          <p
-            style={{
-              color: '#7f8c8d',
-              textAlign: 'center'
-            }}
-          >
-            No feedback yet.
+        {/* Header */}
+        <section className="hero">
+          <h1>Share Your Feedback</h1>
+          <p>
+            Your opinion helps us improve our service.
           </p>
-        ) : (
-          (feedbacks || []).map((fb) => (
-            <div
-              key={fb._id}
-              style={{
-                border: '1px solid #e1e8ed',
-                borderRadius: '8px',
-                padding: '15px',
-                marginBottom: '12px',
-                backgroundColor: '#fafafa'
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px'
-                }}
-              >
-                <h4
-                  style={{
-                    margin: 0,
-                    color: '#2c3e50',
-                    fontSize: '16px'
-                  }}
-                >
-                  {fb.name}
-                </h4>
+        </section>
 
-                <span
-                  style={{
-                    fontSize: '12px',
-                    color: '#95a5a6',
-                    backgroundColor: '#eef2f7',
-                    padding: '3px 8px',
-                    borderRadius: '4px'
-                  }}
-                >
-                  {fb.date}
-                </span>
-              </div>
+        {/* Feedback Form */}
+        <section className="card" id="feedback-form">
+          <h2>📝 Submit Feedback</h2>
 
-              <p
-                style={{
-                  margin: '0 0 8px 0',
-                  fontWeight: 'bold',
-                  color: '#f1c40f',
-                  fontSize: '14px'
-                }}
-              >
-                Rating: {'⭐'.repeat(Number(fb.rating) || 5)}
-              </p>
+          <form onSubmit={handleSubmit}>
 
-              <p
-                style={{
-                  margin: 0,
-                  color: '#555',
-                  fontSize: '14px',
-                  lineHeight: '1.4'
-                }}
-              >
-                {fb.message}
-              </p>
+            <div className="form-group">
+              <label>Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
-          ))
-        )}
-      </div>
+
+            <div className="form-group">
+              <label>Message</label>
+              <textarea
+                name="message"
+                placeholder="Write your feedback here..."
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows="4"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Rating</label>
+              <select
+                name="rating"
+                value={formData.rating}
+                onChange={handleChange}
+              >
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Date</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit Feedback'}
+            </button>
+
+          </form>
+        </section>
+
+        {/* Feedback List */}
+        <section className="feedback-section" id="all-feedback">
+          <div className="section-title">
+            <h2>💬 All Feedbacks</h2>
+            <span>{feedbacks.length} Responses</span>
+          </div>
+
+          {feedbacks.length === 0 ? (
+            <div className="empty-state">
+              <p>No feedback yet.</p>
+            </div>
+          ) : (
+            feedbacks.map((fb) => (
+              <div className="feedback-card" key={fb._id}>
+
+                <div className="feedback-top">
+                  <div>
+                    <h3>{fb.name}</h3>
+                    <div className="rating">
+                      {renderStars(fb.rating)}
+                    </div>
+                  </div>
+
+                  <span className="date">
+                    {fb.date}
+                  </span>
+                </div>
+
+                <p className="message">
+                  {fb.message}
+                </p>
+
+              </div>
+            ))
+          )}
+        </section>
+
+      </main>
+
+      {/* Footer */}
+      <footer>
+        <p>© 2026 Feedback Collector | MERN Project</p>
+      </footer>
+
     </div>
   );
 }
 
-// Reusable Input Style Object
-const inputStyle = {
-  padding: '10px 12px',
-  borderRadius: '6px',
-  border: '1px solid #cccccc',
-  fontSize: '14px',
-  outline: 'none',
-  backgroundColor: '#f9f9f9',
-  boxSizing: 'border-box',
-  width: '100%'
-};
-
 export default App;
+

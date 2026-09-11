@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const dns = require('dns');
@@ -17,10 +18,23 @@ const mongoUri =
   process.env.MONGO_URI ||
   'mongodb://127.0.0.1:27017/feedback-collector';
 
+// Feedback Schema
 const feedbackSchema = new mongoose.Schema({
   name: String,
   email: String,
-  message: String
+  message: String,
+
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: true
+  },
+
+  date: {
+    type: String,
+    required: true
+  }
 });
 
 const Feedback = mongoose.model('Feedback', feedbackSchema);
@@ -35,6 +49,8 @@ app.post('/api/feedback', async (req, res) => {
       message: 'Feedback saved successfully!'
     });
   } catch (error) {
+    console.error('Error saving feedback:', error);
+
     res.status(500).json({
       error: error.message
     });
@@ -48,6 +64,8 @@ app.get('/api/feedback', async (req, res) => {
 
     res.status(200).json(feedbacks);
   } catch (error) {
+    console.error('Error fetching feedback:', error);
+
     res.status(500).json({
       error: error.message
     });
@@ -77,3 +95,4 @@ async function startServer() {
 }
 
 startServer();
+
